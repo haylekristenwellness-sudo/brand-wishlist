@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hayle's Brand Wishlist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-soft: #faf7f2;
+    --card: #ffffff;
+    --ink: #5a1e1c;
+    --ink-soft: #7a3331;
+    --muted: #b5a89c;
+    --line: #ece5d6;
+    --line-soft: #f3eee2;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.55;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  header {
+    padding: 96px 32px 48px;
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  header .eyebrow {
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin: 0 0 8px;
+    font-weight: 500;
+  }
+
+  header h1 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: clamp(22px, 3vw, 30px);
+    letter-spacing: 4px;
+    line-height: 1.2;
+    text-transform: uppercase;
+    margin: 0 0 12px;
+  }
+
+  header h1 em {
+    display: block;
+    font-family: 'Pinyon Script', 'Allura', cursive;
+    font-style: normal;
+    font-weight: 400;
+    font-size: clamp(80px, 12vw, 140px);
+    letter-spacing: 0;
+    text-transform: none;
+    line-height: 1;
+    margin: 16px 0 24px;
+  }
+
+  header .tagline {
+    color: var(--ink);
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 19px;
+    letter-spacing: 0.2px;
+    margin: 0 auto;
+    max-width: 540px;
+    line-height: 1.55;
+  }
+
+  header .divider {
+    width: 32px;
+    height: 1px;
+    background: var(--ink);
+    margin: 32px auto 0;
+  }
+
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    padding: 16px 16px;
+    position: sticky;
+    top: 0;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 10;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .toolbar.search-bar {
+    position: static;
+    border: none;
+    padding-top: 32px;
+    padding-bottom: 8px;
+    background: transparent;
+  }
+
+  .filter-btn {
+    background: transparent;
+    border: 1px solid var(--ink);
+    padding: 9px 20px;
+    border-radius: 999px;
+    font-size: 11px;
+    cursor: pointer;
+    color: var(--ink);
+    transition: all 0.25s ease;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: inherit;
+    font-weight: 500;
+  }
+
+  .filter-btn:hover {
+    background: var(--ink);
+    color: var(--bg);
+  }
+
+  .filter-btn.active {
+    background: var(--ink);
+    color: var(--bg);
+    border-color: var(--ink);
+  }
+
+  .search {
+    display: block;
+    width: min(100%, 360px);
+    margin: 0 auto;
+    padding: 12px 22px;
+    border: 1px solid var(--ink);
+    border-radius: 999px;
+    font-size: 12px;
+    background: transparent;
+    outline: none;
+    font-family: inherit;
+    letter-spacing: 1.5px;
+    color: var(--ink);
+    text-align: center;
+  }
+  .search::placeholder { color: var(--ink); opacity: 0.6; letter-spacing: 2px; font-size: 11px; text-transform: uppercase; }
+  .search:focus { background: var(--card); }
+
+  main { padding: 48px 32px 96px; max-width: 1240px; margin: 0 auto; }
+
+  .category {
+    margin-bottom: 80px;
+    scroll-margin-top: 80px;
+  }
+
+  .category-header {
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    margin-bottom: 8px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .category-header .ordinal {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    font-weight: 400;
+    min-width: 32px;
+  }
+
+  .category-header h2 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 400;
+    font-style: italic;
+    font-size: 34px;
+    letter-spacing: 0.5px;
+    margin: 0;
+    flex-grow: 1;
+    color: var(--ink);
+  }
+
+  .category-header h2 em {
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .category-header .count {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .category .blurb {
+    color: var(--ink);
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: 17px;
+    margin: 18px 0 32px;
+    max-width: 600px;
+    line-height: 1.55;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .card {
+    background: var(--card);
+    padding: 28px 24px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .card:hover {
+    background: var(--ink);
+    color: var(--bg);
+    border-color: var(--ink);
+    transform: translateY(-2px);
+  }
+
+  .card:hover .handle,
+  .card:hover .note,
+  .card:hover .priority {
+    color: var(--bg);
+    opacity: 0.85;
+  }
+
+  .card .brand-name {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: 24px;
+    font-weight: 400;
+    letter-spacing: 0.2px;
+    line-height: 1.2;
+  }
+
+  .card .handle {
+    font-size: 11px;
+    color: var(--ink);
+    opacity: 0.7;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 500;
+    transition: color 0.3s ease;
+  }
+
+  .card .note {
+    font-size: 13px;
+    color: var(--ink);
+    opacity: 0.85;
+    line-height: 1.55;
+    flex-grow: 1;
+    margin-top: 4px;
+    transition: color 0.3s ease;
+  }
+
+  .card .priority {
+    display: inline-block;
+    align-self: flex-start;
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    padding: 0;
+    margin-top: 8px;
+    color: var(--ink);
+    font-weight: 500;
+    transition: color 0.3s ease;
+  }
+  .priority::before { content: "— "; }
+  .priority.dream { opacity: 1; }
+  .priority.high  { opacity: 0.75; }
+  .priority.open  { opacity: 0.55; }
+
+  .hidden { display: none !important; }
+
+  footer {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-top: 1px solid var(--line);
+  }
+
+  footer .divider {
+    width: 24px;
+    height: 1px;
+    background: var(--muted);
+    margin: 0 auto 20px;
+  }
+
+  @media (max-width: 600px) {
+    header { padding: 64px 24px 32px; }
+    main { padding: 32px 20px 64px; }
+    .category { margin-bottom: 56px; }
+    .category-header { flex-wrap: wrap; gap: 8px; }
+    .category-header h2 { font-size: 22px; width: 100%; }
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">A Curated List By:</p>
+  <h1>Brand <em>Wishlist</em></h1>
+  <p class="tagline">A curated list of brands aligned with my aesthetic and storytelling &mdash; for partnerships, gifting, and long-term collaboration.</p>
+  <div class="divider"></div>
+</header>
+
+<div class="toolbar search-bar">
+  <input type="text" class="search" id="search" placeholder="Search brands" />
+</div>
+
+<div class="toolbar" id="filters"></div>
+
+<main id="content"></main>
+
+<footer>
+  <div class="divider"></div>
+  Click any card to open Instagram &nbsp;&middot;&nbsp; Updated <span id="date"></span>
+</footer>
+
+<script>
+  // ============================================================
+  //  EDIT YOUR WISHLIST HERE
+  //  - Add categories as needed
+  //  - For each brand: name, instagram handle (without @), note, priority
+  //  - priority options: "dream", "high", "open"
+  // ============================================================
+
+  const wishlist = [
+    {
+      category: "Fashion & Apparel",
+      blurb: "",
+      brands: [
+        { name: "Quince", handle: "onequince", note: "", priority: "dream" },
+        { name: "KITS Eyecare", handle: "kitseyecare", note: "", priority: "dream" },
+        { name: "Winners", handle: "winners", note: "", priority: "dream" },
+        { name: "Knix", handle: "knix", note: "", priority: "dream" },
+        { name: "Princess Polly", handle: "princesspolly", note: "", priority: "dream" },
+      ]
+    },
+    {
+      category: "Beauty & Skincare",
+      blurb: "",
+      brands: [
+        { name: "Aesop", handle: "aesop", note: "", priority: "dream" },
+        { name: "Aestura Canada", handle: "aestura_ca", note: "", priority: "dream" },
+        { name: "OSEA Malibu", handle: "oseamalibu", note: "", priority: "dream" },
+        { name: "Bonjout Beauty", handle: "bonjoutbeauty", note: "", priority: "dream" },
+        { name: "Beautiful Earth Boutique", handle: "beautifulearthboutique", note: "", priority: "dream" },
+        { name: "Salt & Stone", handle: "saltandstone", note: "", priority: "dream" },
+        { name: "Phlur", handle: "phlur", note: "", priority: "dream" },
+        { name: "Jo Malone London", handle: "jomalonelondon", note: "", priority: "dream" },
+        { name: "OMY Laboratoires", handle: "omylaboratoires", note: "", priority: "dream" },
+        { name: "Grown Alchemist", handle: "grownalchemist", note: "", priority: "dream" },
+        { name: "Dermalogica Canada", handle: "dermalogicacanada", note: "", priority: "dream" },
+        { name: "Estée Lauder Canada", handle: "esteelaudercanada", note: "", priority: "dream" },
+      ]
+    },
+    {
+      category: "Wellness & Fitness",
+      blurb: "",
+      brands: [
+        { name: "Tape Her Sleep", handle: "tapehersleep", note: "", priority: "dream" },
+        { name: "Hatch", handle: "hatchforsleep", note: "", priority: "dream" },
+        { name: "Golf Town", handle: "golftown", note: "", priority: "dream" },
+        { name: "CanPrev", handle: "canprev", note: "", priority: "dream" },
+        { name: "Saje Wellness", handle: "sajewellness", note: "", priority: "dream" },
+      ]
+    },
+    {
+      category: "Home & Lifestyle",
+      blurb: "",
+      brands: [
+        { name: "If Only Home", handle: "ifonlyhome", note: "", priority: "dream" },
+        { name: "Veradek", handle: "veradek", note: "", priority: "dream" },
+        { name: "Every Room", handle: "everyroom.ca", note: "", priority: "dream" },
+        { name: "Tuck Bedding", handle: "tuckbedding", note: "", priority: "dream" },
+        { name: "Boy Smells", handle: "boy__smells", note: "", priority: "dream" },
+        { name: "P.F. Candle Co.", handle: "pfcandleco", note: "", priority: "dream" },
+        { name: "Parachute Home", handle: "parachutehome", note: "", priority: "dream" },
+        { name: "SMEG Canada", handle: "smegcanada", note: "", priority: "dream" },
+        { name: "Our Place", handle: "ourplace", note: "", priority: "dream" },
+        { name: "Great Jones", handle: "greatjones", note: "", priority: "dream" },
+        { name: "Caraway Home", handle: "caraway_home", note: "", priority: "dream" },
+        { name: "Gozney", handle: "gozney", note: "", priority: "dream" },
+        { name: "Public Goods", handle: "publicgoods", note: "", priority: "dream" },
+        { name: "Grove Collaborative", handle: "grovecollaborative", note: "", priority: "dream" },
+        { name: "Burrow", handle: "burrow", note: "", priority: "dream" },
+        { name: "Dupray", handle: "dupray", note: "", priority: "dream" },
+        { name: "Outer", handle: "liveouter", note: "", priority: "dream" },
+        { name: "Silk & Snow", handle: "silkandsnow", note: "", priority: "dream" },
+        { name: "Castlery Canada", handle: "castleryca", note: "", priority: "dream" },
+        { name: "Refco", handle: "refco.ca", note: "", priority: "dream" },
+        { name: "Rug and Weave", handle: "rugandweave", note: "", priority: "dream" },
+        { name: "Bouclair", handle: "bouclair", note: "", priority: "dream" },
+        { name: "Wayfair Canada", handle: "wayfaircanada", note: "", priority: "dream" },
+        { name: "AllModern", handle: "allmodern", note: "", priority: "dream" },
+        { name: "Brooklinen", handle: "brooklinen", note: "", priority: "dream" },
+        { name: "Thuma", handle: "thuma.co", note: "", priority: "dream" },
+        { name: "Cozey", handle: "cozey", note: "", priority: "dream" },
+        { name: "Sundays Furniture", handle: "sundaysfurniture", note: "", priority: "dream" },
+        { name: "Endy", handle: "endy", note: "", priority: "dream" },
+        { name: "Hush Blankets", handle: "hushblankets", note: "", priority: "dream" },
+        { name: "Pillow Cube", handle: "pillowcube", note: "", priority: "dream" },
+        { name: "Soft Frame Designs", handle: "softframedesigns", note: "", priority: "dream" },
+        { name: "Abbode", handle: "abbode", note: "", priority: "dream" },
+        { name: "Boost Blinds", handle: "boost.blinds", note: "", priority: "dream" },
+        { name: "Two Pages Curtains", handle: "twopagescurtains", note: "", priority: "dream" },
+        { name: "Curtarra Curtains", handle: "curtarra_curtains", note: "", priority: "dream" },
+        { name: "Rove Concepts", handle: "roveconcepts", note: "", priority: "dream" },
+        { name: "Tekla Fabrics", handle: "teklafabrics", note: "", priority: "dream" },
+        { name: "Nordic Knots", handle: "nordicknots", note: "", priority: "dream" },
+        { name: "Bolia", handle: "boliacom", note: "", priority: "dream" },
+        { name: "Lola Blankets", handle: "lolablankets", note: "", priority: "dream" },
+        { name: "Guests on Earth", handle: "guestsonearth", note: "", priority: "dream" },
+        { name: "Lifely Home", handle: "lifelyhome", note: "", priority: "dream" },
+        { name: "Hauser Furniture", handle: "hauserfurniture", note: "", priority: "dream" },
+        { name: "Lamps Plus", handle: "lampsplus", note: "", priority: "dream" },
+        { name: "IKEA Canada", handle: "ikeacanada", note: "", priority: "dream" },
+        { name: "The Muskoka Sauna Co", handle: "themuskokasaunaco", note: "", priority: "dream" },
+        { name: "Article", handle: "article", note: "", priority: "dream" },
+        { name: "The Brick", handle: "brickwarehouse", note: "", priority: "dream" },
+        { name: "Second Shop", handle: "secondshopretail", note: "", priority: "dream" },
+        { name: "The EH Frame", handle: "the_ehframe", note: "", priority: "dream" },
+        { name: "Awara Sleep", handle: "awarasleep", note: "", priority: "dream" },
+        { name: "Pura", handle: "pura", note: "", priority: "dream" },
+        { name: "Nolan Interior", handle: "nolan_interior", note: "", priority: "dream" },
+        { name: "Fable Home", handle: "fablehome", note: "", priority: "dream" },
+        { name: "Mellow Sleep", handle: "mellow.sleep", note: "", priority: "dream" },
+        { name: "Umbra", handle: "umbra_design", note: "", priority: "dream" },
+        { name: "Breville Canada", handle: "brevillecanada", note: "", priority: "dream" },
+        { name: "Hulala Home", handle: "hulala_home", note: "", priority: "dream" },
+        { name: "Ergonofis", handle: "ergonofis", note: "", priority: "dream" },
+        { name: "Branch Furniture", handle: "branchfurniture", note: "", priority: "dream" },
+        { name: "AromaTech", handle: "aromatech", note: "", priority: "dream" },
+        { name: "CB2 Canada", handle: "cb2canada", note: "", priority: "dream" },
+        { name: "KitchenAid Canada", handle: "kitchenaid_ca", note: "", priority: "dream" },
+        { name: "Eternity Modern Home", handle: "eternitymodernhome", note: "", priority: "dream" },
+        { name: "Blossholm", handle: "blossholm", note: "", priority: "dream" },
+        { name: "Panelux Canada", handle: "paneluxcanada", note: "", priority: "dream" },
+        { name: "Fellow Products", handle: "fellowproducts", note: "", priority: "dream" },
+        { name: "Year & Day", handle: "yearandday", note: "", priority: "dream" },
+        { name: "Anthropologie Home", handle: "anthropologiehome", note: "", priority: "dream" },
+        { name: "Cozy Earth", handle: "cozyearth", note: "", priority: "dream" },
+        { name: "Snowe Home", handle: "snowehome", note: "", priority: "dream" },
+        { name: "EQ3", handle: "eq3", note: "", priority: "dream" },
+        { name: "Casper Canada", handle: "casper_canada", note: "", priority: "dream" },
+        { name: "Sixpenny", handle: "sixpennyhome", note: "", priority: "dream" },
+      ]
+    },
+    {
+      category: "Travel & Hospitality",
+      blurb: "",
+      brands: [
+        { name: "The Maker Hotel", handle: "themakerhotel", note: "", priority: "dream" },
+        { name: "Elora Mill", handle: "elora_mill", note: "", priority: "dream" },
+        { name: "Kat Florence Hotels", handle: "katflorencehotels", note: "", priority: "dream" },
+        { name: "The Liberty Inn", handle: "thelibertyinn", note: "", priority: "dream" },
+        { name: "The Scotsman Hotel Niagara", handle: "thescotsmanhotelniagara", note: "", priority: "dream" },
+        { name: "Anthony's Elora", handle: "anthonyselora", note: "", priority: "dream" },
+        { name: "Jayne's Cottages", handle: "jaynescottages", note: "", priority: "dream" },
+        { name: "The Ayrshire Hotel", handle: "theayrshirehotel", note: "", priority: "dream" },
+        { name: "Fairmont Le Château Frontenac", handle: "fairmontfrontenac", note: "", priority: "dream" },
+        { name: "The Hotel 1928", handle: "thehotel1928", note: "", priority: "dream" },
+        { name: "Le Capitole Hotel", handle: "le.capitole.hotel", note: "", priority: "dream" },
+        { name: "The High Acre", handle: "thehighacre", note: "", priority: "dream" },
+        { name: "Sparkling Hill Resort", handle: "sparklinghill", note: "", priority: "dream" },
+        { name: "Monos", handle: "monostravel", note: "", priority: "dream" },
+      ]
+    },
+    {
+      category: "Food & Beverage",
+      blurb: "",
+      brands: [
+        { name: "Nespresso Canada", handle: "nespresso.ca", note: "", priority: "dream" },
+        { name: "Patrón", handle: "patron", note: "", priority: "dream" },
+      ]
+    },
+    {
+      category: "Pets",
+      blurb: "",
+      brands: [
+        { name: "Litter-Robot", handle: "thelitterrobot", note: "", priority: "dream" },
+        { name: "Merrick Pet Care", handle: "merrickpetcare", note: "", priority: "dream" },
+      ]
+    },
+    {
+      category: "Tech & Accessories",
+      blurb: "",
+      brands: [
+        { name: "YETI", handle: "yeti", note: "", priority: "dream" },
+        { name: "Oakywood", handle: "oakywood", note: "", priority: "dream" },
+        { name: "Ray-Ban Meta", handle: "raybanmeta", note: "", priority: "dream" },
+        { name: "Philips Hue", handle: "philipshue", note: "", priority: "dream" },
+        { name: "Osume Keys", handle: "osumekeys", note: "", priority: "dream" },
+        { name: "VibeTech Global", handle: "vibetech_global", note: "", priority: "dream" },
+        { name: "Marshall", handle: "marshall", note: "", priority: "dream" },
+        { name: "Meraki Tech Global", handle: "merakitechglobal", note: "", priority: "dream" },
+      ]
+    },
+  ];
+
+  // ============================================================
+  //  Rendering (no need to edit below)
+  // ============================================================
+
+  const content = document.getElementById("content");
+  const filters = document.getElementById("filters");
+  const search = document.getElementById("search");
+
+  function render() {
+    content.innerHTML = "";
+    wishlist.forEach((cat, i) => {
+      if (!cat.brands || cat.brands.length === 0) return;
+      const section = document.createElement("section");
+      section.className = "category";
+      section.id = "cat-" + i;
+      section.dataset.category = cat.category;
+
+      const ordinal = String(i + 1).padStart(2, "0");
+      section.innerHTML = `
+        <div class="category-header">
+          <span class="ordinal">${ordinal}</span>
+          <h2>${cat.category}</h2>
+          <span class="count">${cat.brands.length} Brands</span>
+        </div>
+        ${cat.blurb ? `<p class="blurb">${cat.blurb}</p>` : ""}
+        <div class="grid">
+          ${cat.brands.map(b => `
+            <a class="card" href="https://instagram.com/${b.handle}" target="_blank" rel="noopener" data-name="${b.name.toLowerCase()}" data-handle="${b.handle.toLowerCase()}">
+              <span class="brand-name">${b.name}</span>
+              <span class="handle">@${b.handle}</span>
+              ${b.note ? `<span class="note">${b.note}</span>` : ""}
+              ${b.priority ? `<span class="priority ${b.priority}">${b.priority === "dream" ? "Dream Brand" : b.priority === "high" ? "High Interest" : "Open To"}</span>` : ""}
+            </a>
+          `).join("")}
+        </div>
+      `;
+      content.appendChild(section);
+    });
+
+    // filter chips (only categories with brands)
+    const populated = wishlist
+      .map((c, i) => ({ c, i }))
+      .filter(({ c }) => c.brands && c.brands.length > 0);
+    filters.innerHTML = `<button class="filter-btn active" data-filter="all">All</button>` +
+      populated.map(({ c, i }) => `<button class="filter-btn" data-filter="cat-${i}">${c.category}</button>`).join("");
+
+    filters.querySelectorAll(".filter-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        filters.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const f = btn.dataset.filter;
+        document.querySelectorAll(".category").forEach(sec => {
+          sec.classList.toggle("hidden", !(f === "all" || sec.id === f));
+        });
+      });
+    });
+  }
+
+  search.addEventListener("input", e => {
+    const q = e.target.value.toLowerCase().trim();
+    document.querySelectorAll(".category").forEach(sec => {
+      let visibleCount = 0;
+      sec.querySelectorAll(".card").forEach(card => {
+        const match = !q || card.dataset.name.includes(q) || card.dataset.handle.includes(q);
+        card.classList.toggle("hidden", !match);
+        if (match) visibleCount++;
+      });
+      sec.classList.toggle("hidden", visibleCount === 0);
+    });
+  });
+
+  document.getElementById("date").textContent = new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  render();
+</script>
+
+</body>
+</html>
