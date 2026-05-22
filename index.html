@@ -293,6 +293,60 @@
   .priority.high  { opacity: 0.75; }
   .priority.open  { opacity: 0.55; }
 
+  .status-badge {
+    display: inline-block;
+    align-self: flex-start;
+    font-size: 10px;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    padding: 5px 11px;
+    border-radius: 999px;
+    font-weight: 500;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+  }
+  .status-badge.to-pitch  { background: #f5efe1; color: #8a7d65; border-color: #e8dec7; }
+  .status-badge.pitched   { background: #fbeed1; color: #8a6a2a; border-color: #f0dcab; }
+  .status-badge.in-convo  { background: #fce4c4; color: #6a4818; border-color: #f5cf94; }
+  .status-badge.working   { background: #d6ebcd; color: #355a25; border-color: #b8d7ab; }
+  .status-badge.past      { background: #e6d9ef; color: #5a3a7a; border-color: #cfbfdf; }
+  .status-badge.passed    { background: #ebe4d8; color: #8a7d6e; border-color: #d8cdb8; opacity: 0.7; }
+
+  .card:hover .status-badge { filter: brightness(1.05); }
+
+  .summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    max-width: 720px;
+    margin: 28px auto 0;
+    padding: 0 16px;
+  }
+  .summary-pill {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    color: var(--ink);
+    font-weight: 500;
+    background: #fff;
+  }
+  .summary-pill .num { color: var(--ink); font-weight: 600; margin-right: 4px; }
+
+  .filter-row-label {
+    width: 100%;
+    text-align: center;
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 4px;
+    font-weight: 500;
+  }
+
   .hidden { display: none !important; }
 
   footer {
@@ -328,12 +382,15 @@
   <p class="eyebrow">A Curated List By:</p>
   <h1>Brand <em>Wishlist</em></h1>
   <p class="tagline">A curated list of brands aligned with my aesthetic and storytelling &mdash; for partnerships, gifting, and long-term collaboration.</p>
+  <div class="summary" id="summary"></div>
   <div class="divider"></div>
 </header>
 
 <div class="toolbar search-bar">
   <input type="text" class="search" id="search" placeholder="Search brands" />
 </div>
+
+<div class="toolbar" id="status-filters"></div>
 
 <div class="toolbar" id="filters"></div>
 
@@ -532,7 +589,24 @@
 
   const content = document.getElementById("content");
   const filters = document.getElementById("filters");
+  const statusFilters = document.getElementById("status-filters");
+  const summary = document.getElementById("summary");
   const search = document.getElementById("search");
+
+  const STATUS_META = {
+    "to-pitch": { label: "To Pitch",       short: "To Pitch" },
+    "pitched":  { label: "Pitched",        short: "Pitched" },
+    "in-convo": { label: "In Conversation",short: "In Convo" },
+    "working":  { label: "Working With",   short: "Working" },
+    "past":     { label: "Past Collab",    short: "Past Collab" },
+    "passed":   { label: "Passed",         short: "Passed" },
+  };
+  const STATUS_ORDER = ["working", "in-convo", "pitched", "to-pitch", "past", "passed"];
+
+  let activeCategoryFilter = "all";
+  let activeStatusFilter = "all";
+
+  function getStatus(b) { return b.status || "to-pitch"; }
 
   function render() {
     content.innerHTML = "";
@@ -552,50 +626,86 @@
         </div>
         ${cat.blurb ? `<p class="blurb">${cat.blurb}</p>` : ""}
         <div class="grid">
-          ${cat.brands.map(b => `
-            <a class="card" href="https://instagram.com/${b.handle}" target="_blank" rel="noopener" data-name="${b.name.toLowerCase()}" data-handle="${b.handle.toLowerCase()}">
+          ${cat.brands.map(b => {
+            const status = getStatus(b);
+            return `
+            <a class="card" href="https://instagram.com/${b.handle}" target="_blank" rel="noopener"
+               data-name="${b.name.toLowerCase()}" data-handle="${b.handle.toLowerCase()}" data-status="${status}">
+              <span class="status-badge ${status}">${STATUS_META[status].label}</span>
               <span class="brand-name">${b.name}</span>
               <span class="handle">@${b.handle}</span>
               ${b.note ? `<span class="note">${b.note}</span>` : ""}
               ${b.priority ? `<span class="priority ${b.priority}">${b.priority === "dream" ? "Dream Brand" : b.priority === "high" ? "High Interest" : "Open To"}</span>` : ""}
-            </a>
-          `).join("")}
+            </a>`;
+          }).join("")}
         </div>
       `;
       content.appendChild(section);
     });
 
-    // filter chips (only categories with brands)
+    // category filter chips
     const populated = wishlist
       .map((c, i) => ({ c, i }))
       .filter(({ c }) => c.brands && c.brands.length > 0);
-    filters.innerHTML = `<button class="filter-btn active" data-filter="all">All</button>` +
+    filters.innerHTML = `<button class="filter-btn active" data-filter="all">All Categories</button>` +
       populated.map(({ c, i }) => `<button class="filter-btn" data-filter="cat-${i}">${c.category}</button>`).join("");
 
     filters.querySelectorAll(".filter-btn").forEach(btn => {
       btn.addEventListener("click", () => {
         filters.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
-        const f = btn.dataset.filter;
-        document.querySelectorAll(".category").forEach(sec => {
-          sec.classList.toggle("hidden", !(f === "all" || sec.id === f));
-        });
+        activeCategoryFilter = btn.dataset.filter;
+        applyFilters();
       });
     });
+
+    // status filter chips
+    const statusCounts = {};
+    wishlist.forEach(c => c.brands.forEach(b => {
+      const s = getStatus(b);
+      statusCounts[s] = (statusCounts[s] || 0) + 1;
+    }));
+    const totalBrands = Object.values(statusCounts).reduce((a, b) => a + b, 0);
+
+    statusFilters.innerHTML =
+      `<button class="filter-btn active" data-status="all">All Statuses</button>` +
+      STATUS_ORDER.filter(s => statusCounts[s]).map(s =>
+        `<button class="filter-btn" data-status="${s}">${STATUS_META[s].short} · ${statusCounts[s]}</button>`
+      ).join("");
+
+    statusFilters.querySelectorAll(".filter-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        statusFilters.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        activeStatusFilter = btn.dataset.status;
+        applyFilters();
+      });
+    });
+
+    // summary pills in header
+    summary.innerHTML = `<span class="summary-pill"><span class="num">${totalBrands}</span>Total</span>` +
+      STATUS_ORDER.filter(s => statusCounts[s]).map(s =>
+        `<span class="summary-pill"><span class="num">${statusCounts[s]}</span>${STATUS_META[s].short}</span>`
+      ).join("");
   }
 
-  search.addEventListener("input", e => {
-    const q = e.target.value.toLowerCase().trim();
+  function applyFilters() {
+    const q = search.value.toLowerCase().trim();
     document.querySelectorAll(".category").forEach(sec => {
       let visibleCount = 0;
       sec.querySelectorAll(".card").forEach(card => {
-        const match = !q || card.dataset.name.includes(q) || card.dataset.handle.includes(q);
-        card.classList.toggle("hidden", !match);
-        if (match) visibleCount++;
+        const matchSearch = !q || card.dataset.name.includes(q) || card.dataset.handle.includes(q);
+        const matchStatus = activeStatusFilter === "all" || card.dataset.status === activeStatusFilter;
+        const visible = matchSearch && matchStatus;
+        card.classList.toggle("hidden", !visible);
+        if (visible) visibleCount++;
       });
-      sec.classList.toggle("hidden", visibleCount === 0);
+      const catMatch = activeCategoryFilter === "all" || sec.id === activeCategoryFilter;
+      sec.classList.toggle("hidden", visibleCount === 0 || !catMatch);
     });
-  });
+  }
+
+  search.addEventListener("input", applyFilters);
 
   document.getElementById("date").textContent = new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" });
   render();
