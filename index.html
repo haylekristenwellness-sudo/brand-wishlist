@@ -548,24 +548,32 @@
     font-style: italic;
   }
 
-  .modal-notes-section {
+  .modal-notes-section, .modal-deal-section, .modal-contact-section {
     margin: 8px 0 24px;
     text-align: left;
   }
-  .modal-notes-header {
+  .modal-deal-section, .modal-contact-section { display: none; }
+  .modal-deal-section.active, .modal-contact-section.active { display: block; }
+  .modal-deal-section, .modal-contact-section {
+    padding: 20px;
+    background: #fbf6ea;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+  }
+  .modal-notes-header, .modal-section-header {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
   }
-  .modal-notes-label {
+  .modal-notes-label, .modal-section-label {
     font-size: 10px;
     letter-spacing: 2.5px;
     text-transform: uppercase;
     color: var(--muted);
     font-weight: 500;
   }
-  .modal-notes-saved {
+  .modal-notes-saved, .modal-section-saved {
     font-size: 10px;
     letter-spacing: 1.5px;
     text-transform: uppercase;
@@ -574,7 +582,48 @@
     transition: opacity 0.3s ease;
     font-style: italic;
   }
-  .modal-notes-saved.visible { opacity: 1; }
+  .modal-notes-saved.visible, .modal-section-saved.visible { opacity: 1; }
+  .modal-deal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 14px;
+  }
+  .modal-deal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .modal-deal-field-wide { grid-column: 1 / -1; }
+  .modal-deal-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .modal-deal-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .modal-deal-input::placeholder {
+    color: var(--muted);
+    opacity: 0.7;
+  }
+  .modal-deal-input:focus {
+    border-color: var(--ink);
+    box-shadow: 0 0 0 3px rgba(90, 30, 28, 0.08);
+  }
+  @media (max-width: 500px) {
+    .modal-deal-grid { grid-template-columns: 1fr; }
+  }
   .modal-notes-textarea {
     width: 100%;
     min-height: 90px;
@@ -768,6 +817,60 @@
     <div class="modal-handle" id="modal-handle"></div>
     <div class="modal-note" id="modal-note"></div>
     <div class="modal-priority" id="modal-priority"></div>
+
+    <div class="modal-contact-section" id="modal-contact-section">
+      <div class="modal-section-header">
+        <span class="modal-section-label">Contact</span>
+        <span class="modal-section-saved" id="modal-contact-saved"></span>
+      </div>
+      <div class="modal-deal-grid">
+        <div class="modal-deal-field modal-deal-field-wide">
+          <label class="modal-deal-label" for="contact-email">Email</label>
+          <input type="email" id="contact-email" class="modal-deal-input" placeholder="press@brand.com" data-field="email" />
+        </div>
+        <div class="modal-deal-field">
+          <label class="modal-deal-label" for="contact-name">Contact Name</label>
+          <input type="text" id="contact-name" class="modal-deal-input" placeholder="First Last" data-field="name" />
+        </div>
+        <div class="modal-deal-field">
+          <label class="modal-deal-label" for="contact-role">Role / Title</label>
+          <input type="text" id="contact-role" class="modal-deal-input" placeholder="PR Manager" data-field="role" />
+        </div>
+        <div class="modal-deal-field modal-deal-field-wide">
+          <label class="modal-deal-label" for="contact-source">Source</label>
+          <input type="text" id="contact-source" class="modal-deal-input" placeholder="Where you found this contact (IG DM, website, intro from…)" data-field="source" />
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-deal-section" id="modal-deal-section">
+      <div class="modal-section-header">
+        <span class="modal-section-label">Deal Details</span>
+        <span class="modal-section-saved" id="modal-deal-saved"></span>
+      </div>
+      <div class="modal-deal-grid">
+        <div class="modal-deal-field">
+          <label class="modal-deal-label" for="deal-deliverables">Deliverables</label>
+          <input type="text" id="deal-deliverables" class="modal-deal-input" placeholder="e.g. 3 Reels + 5 Stories" data-field="deliverables" />
+        </div>
+        <div class="modal-deal-field">
+          <label class="modal-deal-label" for="deal-amount">Agreed Amount</label>
+          <input type="text" id="deal-amount" class="modal-deal-input" placeholder="e.g. $2,500" data-field="amount" />
+        </div>
+        <div class="modal-deal-field">
+          <label class="modal-deal-label" for="deal-due">Due Date</label>
+          <input type="date" id="deal-due" class="modal-deal-input" data-field="dueDate" />
+        </div>
+        <div class="modal-deal-field">
+          <label class="modal-deal-label" for="deal-revisions">Revisions Allowed</label>
+          <input type="text" id="deal-revisions" class="modal-deal-input" placeholder="e.g. 2" data-field="revisions" />
+        </div>
+        <div class="modal-deal-field modal-deal-field-wide">
+          <label class="modal-deal-label" for="deal-extra">Other Details</label>
+          <input type="text" id="deal-extra" class="modal-deal-input" placeholder="Usage rights, exclusivity, anything else…" data-field="extra" />
+        </div>
+      </div>
+    </div>
 
     <div class="modal-notes-section">
       <div class="modal-notes-header">
@@ -1006,8 +1109,43 @@
   // load saved statuses from localStorage
   const STORAGE_KEY = "wishlist-statuses-v1";
   const NOTES_KEY = "wishlist-notes-v1";
+  const DEALS_KEY = "wishlist-deals-v1";
+  const CONTACTS_KEY = "wishlist-contacts-v1";
   const savedStatuses = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
   const savedNotes = JSON.parse(localStorage.getItem(NOTES_KEY) || "{}");
+  const savedDeals = JSON.parse(localStorage.getItem(DEALS_KEY) || "{}");
+  const savedContacts = JSON.parse(localStorage.getItem(CONTACTS_KEY) || "{}");
+
+  // statuses that show the deal details / contact sections
+  const DEAL_STATUSES = new Set(["in-convo", "working", "past"]);
+  const CONTACT_STATUSES = new Set(["to-pitch", "pitched"]);
+
+  function getDeal(handle) {
+    return savedDeals[handle] || {};
+  }
+  function setDealField(handle, field, value) {
+    if (!savedDeals[handle]) savedDeals[handle] = {};
+    if (value && value.trim()) {
+      savedDeals[handle][field] = value;
+    } else {
+      delete savedDeals[handle][field];
+    }
+    if (Object.keys(savedDeals[handle]).length === 0) delete savedDeals[handle];
+    localStorage.setItem(DEALS_KEY, JSON.stringify(savedDeals));
+  }
+  function getContact(handle) {
+    return savedContacts[handle] || {};
+  }
+  function setContactField(handle, field, value) {
+    if (!savedContacts[handle]) savedContacts[handle] = {};
+    if (value && value.trim()) {
+      savedContacts[handle][field] = value;
+    } else {
+      delete savedContacts[handle][field];
+    }
+    if (Object.keys(savedContacts[handle]).length === 0) delete savedContacts[handle];
+    localStorage.setItem(CONTACTS_KEY, JSON.stringify(savedContacts));
+  }
 
   function getStatus(b) {
     if (savedStatuses[b.handle]) return savedStatuses[b.handle];
@@ -1180,7 +1318,29 @@
     instagram: document.getElementById("modal-instagram"),
     notesTextarea: document.getElementById("modal-notes-textarea"),
     notesSaved: document.getElementById("modal-notes-saved"),
+    dealSection: document.getElementById("modal-deal-section"),
+    dealSaved: document.getElementById("modal-deal-saved"),
+    dealInputs: {
+      deliverables: document.getElementById("deal-deliverables"),
+      amount: document.getElementById("deal-amount"),
+      dueDate: document.getElementById("deal-due"),
+      revisions: document.getElementById("deal-revisions"),
+      extra: document.getElementById("deal-extra"),
+    },
+    contactSection: document.getElementById("modal-contact-section"),
+    contactSaved: document.getElementById("modal-contact-saved"),
+    contactInputs: {
+      email: document.getElementById("contact-email"),
+      name: document.getElementById("contact-name"),
+      role: document.getElementById("contact-role"),
+      source: document.getElementById("contact-source"),
+    },
   };
+
+  function updateDealSectionVisibility(status) {
+    modalEls.dealSection.classList.toggle("active", DEAL_STATUSES.has(status));
+    modalEls.contactSection.classList.toggle("active", CONTACT_STATUSES.has(status));
+  }
 
   let currentBrandHandle = null;
 
@@ -1221,6 +1381,22 @@
     modalEls.notesTextarea.value = existingNote !== undefined ? existingNote : (brand.note || "");
     modalEls.notesSaved.classList.remove("visible");
 
+    // load deal details
+    const deal = getDeal(brand.handle);
+    Object.entries(modalEls.dealInputs).forEach(([field, input]) => {
+      input.value = deal[field] || "";
+    });
+    modalEls.dealSaved.classList.remove("visible");
+
+    // load contact info
+    const contact = getContact(brand.handle);
+    Object.entries(modalEls.contactInputs).forEach(([field, input]) => {
+      input.value = contact[field] || "";
+    });
+    modalEls.contactSaved.classList.remove("visible");
+
+    updateDealSectionVisibility(status);
+
     modalBackdrop.classList.add("open");
     modalBackdrop.setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden";
@@ -1240,6 +1416,7 @@
     const newStatus = item.dataset.value;
     setStatus(currentBrandHandle, newStatus);
     setDropdownStatus(newStatus);
+    updateDealSectionVisibility(newStatus);
     statusDropdown.classList.remove("open");
     statusDropdownBtn.setAttribute("aria-expanded", "false");
     render();
@@ -1277,12 +1454,42 @@
       setAgentNote(currentBrandHandle, modalEls.notesTextarea.value);
       modalEls.notesSaved.textContent = "✓ Saved";
       modalEls.notesSaved.classList.add("visible");
-      // re-render so the card on the page shows the updated note
       render();
       applyFilters();
-      // hide the "saved" indicator after a moment
       setTimeout(() => modalEls.notesSaved.classList.remove("visible"), 2000);
     }, 500);
+  });
+
+  // deal details autosave (debounced)
+  let dealDebounce = null;
+  Object.entries(modalEls.dealInputs).forEach(([field, input]) => {
+    input.addEventListener("input", () => {
+      if (!currentBrandHandle) return;
+      clearTimeout(dealDebounce);
+      dealDebounce = setTimeout(() => {
+        setDealField(currentBrandHandle, field, input.value);
+        modalEls.dealSaved.textContent = "✓ Saved";
+        modalEls.dealSaved.classList.add("visible");
+        render();
+        applyFilters();
+        setTimeout(() => modalEls.dealSaved.classList.remove("visible"), 2000);
+      }, 500);
+    });
+  });
+
+  // contact details autosave (debounced)
+  let contactDebounce = null;
+  Object.entries(modalEls.contactInputs).forEach(([field, input]) => {
+    input.addEventListener("input", () => {
+      if (!currentBrandHandle) return;
+      clearTimeout(contactDebounce);
+      contactDebounce = setTimeout(() => {
+        setContactField(currentBrandHandle, field, input.value);
+        modalEls.contactSaved.textContent = "✓ Saved";
+        modalEls.contactSaved.classList.add("visible");
+        setTimeout(() => modalEls.contactSaved.classList.remove("visible"), 2000);
+      }, 500);
+    });
   });
 
   // close handlers
