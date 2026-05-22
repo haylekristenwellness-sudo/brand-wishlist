@@ -111,6 +111,15 @@
     background: transparent;
   }
 
+  /* Filter toolbar containing the status dropdown — sits above category toolbar */
+  .toolbar.filter-toolbar {
+    z-index: 30;
+    overflow: visible;
+  }
+  .toolbar.filter-toolbar.dropdown-open {
+    z-index: 50;
+  }
+
   .filter-btn {
     background: transparent;
     border: 1px solid var(--ink);
@@ -231,6 +240,10 @@
     color: inherit;
     cursor: pointer;
     position: relative;
+    text-align: left;
+    font-family: inherit;
+    font-size: inherit;
+    width: 100%;
   }
 
   .card:hover {
@@ -349,6 +362,332 @@
 
   .hidden { display: none !important; }
 
+  /* ===== Modal ===== */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(90, 30, 28, 0.4);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .modal-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .modal {
+    background: var(--bg);
+    border-radius: 12px;
+    max-width: 480px;
+    width: 100%;
+    padding: 40px 36px 32px;
+    box-shadow: 0 20px 60px rgba(90, 30, 28, 0.25);
+    position: relative;
+    transform: translateY(20px);
+    transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
+    text-align: center;
+  }
+  .modal-backdrop.open .modal {
+    transform: translateY(0);
+  }
+  .modal-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: transparent;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--ink);
+    font-size: 18px;
+    line-height: 1;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-close:hover { background: var(--line-soft); }
+
+  .modal-status-wrap {
+    margin-bottom: 22px;
+  }
+  .modal-status-label {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  .status-dropdown {
+    display: inline-block;
+    position: relative;
+  }
+  .status-dropdown-btn {
+    appearance: none;
+    -webkit-appearance: none;
+    font-family: inherit;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 500;
+    padding: 9px 16px 9px 18px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+  }
+  .status-dropdown-btn:hover { filter: brightness(0.97); }
+  .status-dropdown-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+  .status-dropdown-arrow {
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+  }
+  .status-dropdown.open .status-dropdown-arrow { transform: rotate(180deg); }
+
+  /* default neutral state for filter dropdown when "all" */
+  .status-dropdown-btn.filter-all {
+    background-color: var(--ink);
+    color: var(--bg);
+    border-color: var(--ink);
+  }
+
+  /* status pill colors (shared by button) */
+  .status-dropdown-btn.to-pitch  { background-color: #f5efe1; color: #8a7d65; border-color: #e8dec7; }
+  .status-dropdown-btn.pitched   { background-color: #fbeed1; color: #8a6a2a; border-color: #f0dcab; }
+  .status-dropdown-btn.in-convo  { background-color: #fce4c4; color: #6a4818; border-color: #f5cf94; }
+  .status-dropdown-btn.working   { background-color: #d6ebcd; color: #355a25; border-color: #b8d7ab; }
+  .status-dropdown-btn.past      { background-color: #e6d9ef; color: #5a3a7a; border-color: #cfbfdf; }
+  .status-dropdown-btn.passed    { background-color: #ebe4d8; color: #8a7d6e; border-color: #d8cdb8; }
+
+  .status-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(-6px);
+    list-style: none;
+    margin: 0;
+    padding: 6px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(90, 30, 28, 0.18);
+    min-width: 220px;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  .status-dropdown.open .status-dropdown-menu {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+  }
+  .status-dropdown-item {
+    font-family: inherit;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 500;
+    padding: 9px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: var(--ink);
+    border: 1px solid transparent;
+    text-align: left;
+    margin-bottom: 2px;
+  }
+  .status-dropdown-item:last-child { margin-bottom: 0; }
+  .status-dropdown-item:hover {
+    background-color: var(--card);
+  }
+  .status-dropdown-item.selected {
+    border-color: var(--ink);
+  }
+  /* small color dot next to each item */
+  .status-dropdown-item::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 10px;
+    vertical-align: middle;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+  /* "All" option in filter dropdown gets a solid ink dot */
+  .status-dropdown-item.filter-all::before { background-color: var(--ink); border-color: var(--ink); }
+
+  .status-dropdown-item.to-pitch::before { background-color: #f5efe1; border-color: #e8dec7; }
+  .status-dropdown-item.pitched::before  { background-color: #fbeed1; border-color: #f0dcab; }
+  .status-dropdown-item.in-convo::before { background-color: #fce4c4; border-color: #f5cf94; }
+  .status-dropdown-item.working::before  { background-color: #d6ebcd; border-color: #b8d7ab; }
+  .status-dropdown-item.past::before     { background-color: #e6d9ef; border-color: #cfbfdf; }
+  .status-dropdown-item.passed::before   { background-color: #ebe4d8; border-color: #d8cdb8; }
+
+  .modal-footnote {
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    color: var(--muted);
+    margin: 20px 0 0;
+    font-style: italic;
+  }
+
+  .modal-notes-section {
+    margin: 8px 0 24px;
+    text-align: left;
+  }
+  .modal-notes-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .modal-notes-label {
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .modal-notes-saved {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    font-style: italic;
+  }
+  .modal-notes-saved.visible { opacity: 1; }
+  .modal-notes-textarea {
+    width: 100%;
+    min-height: 90px;
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--ink);
+    line-height: 1.55;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .modal-notes-textarea::placeholder {
+    color: var(--muted);
+    font-style: italic;
+    opacity: 0.8;
+  }
+  .modal-notes-textarea:focus {
+    border-color: var(--ink);
+    box-shadow: 0 0 0 3px rgba(90, 30, 28, 0.08);
+  }
+  .modal .modal-category {
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .modal .modal-name {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: 38px;
+    font-weight: 400;
+    color: var(--ink);
+    margin: 0 0 6px;
+    line-height: 1.15;
+  }
+  .modal .modal-handle {
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 18px;
+    font-weight: 500;
+  }
+  .modal .modal-note {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--ink);
+    line-height: 1.55;
+    margin: 0 auto 22px;
+    max-width: 360px;
+  }
+  .modal .modal-priority {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin-bottom: 24px;
+    font-weight: 500;
+  }
+  .modal .modal-priority.dream { opacity: 1; }
+  .modal .modal-priority.high  { opacity: 0.7; }
+  .modal .modal-priority.open  { opacity: 0.5; }
+  .modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .modal-btn {
+    display: inline-block;
+    padding: 14px 28px;
+    border-radius: 999px;
+    font-size: 12px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    font-weight: 500;
+    font-family: inherit;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.25s ease;
+    cursor: pointer;
+    border: 1px solid var(--ink);
+  }
+  .modal-btn.primary {
+    background: var(--ink);
+    color: var(--bg);
+  }
+  .modal-btn.primary:hover {
+    background: var(--ink-soft);
+    border-color: var(--ink-soft);
+    transform: translateY(-1px);
+  }
+  .modal-btn.secondary {
+    background: transparent;
+    color: var(--ink);
+  }
+  .modal-btn.secondary:hover {
+    background: var(--ink);
+    color: var(--bg);
+  }
+
+  @media (max-width: 500px) {
+    .modal { padding: 36px 24px 24px; }
+    .modal .modal-name { font-size: 30px; }
+  }
+
   footer {
     text-align: center;
     padding: 48px 24px;
@@ -390,11 +729,65 @@
   <input type="text" class="search" id="search" placeholder="Search brands" />
 </div>
 
-<div class="toolbar" id="status-filters"></div>
+<div class="toolbar filter-toolbar">
+  <div class="status-dropdown filter-dropdown" id="status-filter-dropdown">
+    <button type="button" class="status-dropdown-btn filter-all" id="status-filter-btn" aria-haspopup="listbox" aria-expanded="false">
+      <span class="status-dropdown-current">All Statuses</span>
+      <svg class="status-dropdown-arrow" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <ul class="status-dropdown-menu" id="status-filter-menu" role="listbox" tabindex="-1"></ul>
+  </div>
+</div>
 
 <div class="toolbar" id="filters"></div>
 
 <main id="content"></main>
+
+<div class="modal-backdrop" id="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal" id="modal">
+    <button class="modal-close" id="modal-close" aria-label="Close">✕</button>
+    <div class="modal-status-wrap">
+      <label class="modal-status-label">Status</label>
+      <div class="status-dropdown" id="status-dropdown">
+        <button type="button" class="status-dropdown-btn to-pitch" id="status-dropdown-btn" aria-haspopup="listbox" aria-expanded="false">
+          <span class="status-dropdown-current">To Pitch</span>
+          <svg class="status-dropdown-arrow" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 4l3 3 3-3" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <ul class="status-dropdown-menu" id="status-dropdown-menu" role="listbox" tabindex="-1">
+          <li class="status-dropdown-item to-pitch" data-value="to-pitch" role="option">To Pitch</li>
+          <li class="status-dropdown-item pitched" data-value="pitched" role="option">Pitched</li>
+          <li class="status-dropdown-item in-convo" data-value="in-convo" role="option">In Conversation</li>
+          <li class="status-dropdown-item working" data-value="working" role="option">Working With</li>
+          <li class="status-dropdown-item past" data-value="past" role="option">Past Collab</li>
+          <li class="status-dropdown-item passed" data-value="passed" role="option">Passed</li>
+        </ul>
+      </div>
+    </div>
+    <div class="modal-category" id="modal-category"></div>
+    <h2 class="modal-name" id="modal-name"></h2>
+    <div class="modal-handle" id="modal-handle"></div>
+    <div class="modal-note" id="modal-note"></div>
+    <div class="modal-priority" id="modal-priority"></div>
+
+    <div class="modal-notes-section">
+      <div class="modal-notes-header">
+        <label class="modal-notes-label" for="modal-notes-textarea">Notes</label>
+        <span class="modal-notes-saved" id="modal-notes-saved"></span>
+      </div>
+      <textarea
+        id="modal-notes-textarea"
+        class="modal-notes-textarea"
+        placeholder="Add notes here — contact info, follow-up dates, anything to remember…"
+        rows="4"></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <a class="modal-btn primary" id="modal-instagram" href="#" target="_blank" rel="noopener">Open Instagram →</a>
+      <button class="modal-btn secondary" id="modal-close-2">Close</button>
+    </div>
+    <p class="modal-footnote">Status &amp; notes save to this browser. Message Haylé to sync the master list.</p>
+  </div>
+</div>
 
 <footer>
   <div class="divider"></div>
@@ -589,9 +982,13 @@
 
   const content = document.getElementById("content");
   const filters = document.getElementById("filters");
-  const statusFilters = document.getElementById("status-filters");
   const summary = document.getElementById("summary");
   const search = document.getElementById("search");
+
+  const statusFilterDropdown = document.getElementById("status-filter-dropdown");
+  const statusFilterBtn = document.getElementById("status-filter-btn");
+  const statusFilterMenu = document.getElementById("status-filter-menu");
+  const statusFilterCurrent = statusFilterBtn.querySelector(".status-dropdown-current");
 
   const STATUS_META = {
     "to-pitch": { label: "To Pitch",       short: "To Pitch" },
@@ -606,7 +1003,41 @@
   let activeCategoryFilter = "all";
   let activeStatusFilter = "all";
 
-  function getStatus(b) { return b.status || "to-pitch"; }
+  // load saved statuses from localStorage
+  const STORAGE_KEY = "wishlist-statuses-v1";
+  const NOTES_KEY = "wishlist-notes-v1";
+  const savedStatuses = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+  const savedNotes = JSON.parse(localStorage.getItem(NOTES_KEY) || "{}");
+
+  function getStatus(b) {
+    if (savedStatuses[b.handle]) return savedStatuses[b.handle];
+    return b.status || "to-pitch";
+  }
+  function setStatus(handle, status) {
+    savedStatuses[handle] = status;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(savedStatuses));
+  }
+  function getAgentNote(handle) {
+    return savedNotes[handle] || "";
+  }
+  function setAgentNote(handle, note) {
+    if (note && note.trim()) {
+      savedNotes[handle] = note;
+    } else {
+      delete savedNotes[handle];
+    }
+    localStorage.setItem(NOTES_KEY, JSON.stringify(savedNotes));
+  }
+
+  function setStatusFilterButton(filter, counts, total) {
+    if (filter === "all") {
+      statusFilterBtn.className = "status-dropdown-btn filter-all";
+      statusFilterCurrent.textContent = `All Statuses · ${total}`;
+    } else {
+      statusFilterBtn.className = "status-dropdown-btn " + filter;
+      statusFilterCurrent.textContent = `${STATUS_META[filter].short} · ${counts[filter] || 0}`;
+    }
+  }
 
   function render() {
     content.innerHTML = "";
@@ -626,17 +1057,20 @@
         </div>
         ${cat.blurb ? `<p class="blurb">${cat.blurb}</p>` : ""}
         <div class="grid">
-          ${cat.brands.map(b => {
+          ${cat.brands.map((b, bi) => {
             const status = getStatus(b);
+            const agentNote = getAgentNote(b.handle);
+            const displayNote = agentNote || b.note || "";
             return `
-            <a class="card" href="https://instagram.com/${b.handle}" target="_blank" rel="noopener"
+            <button class="card" type="button"
+               data-cat="${i}" data-idx="${bi}"
                data-name="${b.name.toLowerCase()}" data-handle="${b.handle.toLowerCase()}" data-status="${status}">
               <span class="status-badge ${status}">${STATUS_META[status].label}</span>
               <span class="brand-name">${b.name}</span>
               <span class="handle">@${b.handle}</span>
-              ${b.note ? `<span class="note">${b.note}</span>` : ""}
+              ${displayNote ? `<span class="note">${displayNote}</span>` : ""}
               ${b.priority ? `<span class="priority ${b.priority}">${b.priority === "dream" ? "Dream Brand" : b.priority === "high" ? "High Interest" : "Open To"}</span>` : ""}
-            </a>`;
+            </button>`;
           }).join("")}
         </div>
       `;
@@ -659,7 +1093,7 @@
       });
     });
 
-    // status filter chips
+    // status filter dropdown
     const statusCounts = {};
     wishlist.forEach(c => c.brands.forEach(b => {
       const s = getStatus(b);
@@ -667,20 +1101,14 @@
     }));
     const totalBrands = Object.values(statusCounts).reduce((a, b) => a + b, 0);
 
-    statusFilters.innerHTML =
-      `<button class="filter-btn active" data-status="all">All Statuses</button>` +
+    statusFilterMenu.innerHTML =
+      `<li class="status-dropdown-item filter-all ${activeStatusFilter === "all" ? "selected" : ""}" data-value="all" role="option">All Statuses · ${totalBrands}</li>` +
       STATUS_ORDER.filter(s => statusCounts[s]).map(s =>
-        `<button class="filter-btn" data-status="${s}">${STATUS_META[s].short} · ${statusCounts[s]}</button>`
+        `<li class="status-dropdown-item ${s} ${activeStatusFilter === s ? "selected" : ""}" data-value="${s}" role="option">${STATUS_META[s].short} · ${statusCounts[s]}</li>`
       ).join("");
 
-    statusFilters.querySelectorAll(".filter-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        statusFilters.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        activeStatusFilter = btn.dataset.status;
-        applyFilters();
-      });
-    });
+    // sync the button's appearance to the active filter
+    setStatusFilterButton(activeStatusFilter, statusCounts, totalBrands);
 
     // summary pills in header
     summary.innerHTML = `<span class="summary-pill"><span class="num">${totalBrands}</span>Total</span>` +
@@ -706,6 +1134,166 @@
   }
 
   search.addEventListener("input", applyFilters);
+
+  // ===== Status filter dropdown =====
+  const filterToolbar = statusFilterDropdown.closest(".toolbar");
+
+  function setFilterDropdownOpen(isOpen) {
+    statusFilterDropdown.classList.toggle("open", isOpen);
+    if (filterToolbar) filterToolbar.classList.toggle("dropdown-open", isOpen);
+    statusFilterBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  }
+
+  statusFilterBtn.addEventListener("click", e => {
+    e.stopPropagation();
+    setFilterDropdownOpen(!statusFilterDropdown.classList.contains("open"));
+  });
+
+  statusFilterMenu.addEventListener("click", e => {
+    const item = e.target.closest(".status-dropdown-item");
+    if (!item) return;
+    activeStatusFilter = item.dataset.value;
+    setFilterDropdownOpen(false);
+    render();
+    applyFilters();
+  });
+
+  document.addEventListener("click", e => {
+    if (statusFilterDropdown.classList.contains("open") && !statusFilterDropdown.contains(e.target)) {
+      setFilterDropdownOpen(false);
+    }
+  });
+
+  // ===== Modal logic =====
+  const modalBackdrop = document.getElementById("modal-backdrop");
+  const statusDropdown = document.getElementById("status-dropdown");
+  const statusDropdownBtn = document.getElementById("status-dropdown-btn");
+  const statusDropdownMenu = document.getElementById("status-dropdown-menu");
+  const statusDropdownCurrent = statusDropdownBtn.querySelector(".status-dropdown-current");
+
+  const modalEls = {
+    category: document.getElementById("modal-category"),
+    name: document.getElementById("modal-name"),
+    handle: document.getElementById("modal-handle"),
+    note: document.getElementById("modal-note"),
+    priority: document.getElementById("modal-priority"),
+    instagram: document.getElementById("modal-instagram"),
+    notesTextarea: document.getElementById("modal-notes-textarea"),
+    notesSaved: document.getElementById("modal-notes-saved"),
+  };
+
+  let currentBrandHandle = null;
+
+  function setDropdownStatus(status) {
+    statusDropdownBtn.className = "status-dropdown-btn " + status;
+    statusDropdownCurrent.textContent = STATUS_META[status].label;
+    statusDropdownMenu.querySelectorAll(".status-dropdown-item").forEach(item => {
+      item.classList.toggle("selected", item.dataset.value === status);
+    });
+  }
+
+  function openModal(catIdx, brandIdx) {
+    const cat = wishlist[catIdx];
+    const brand = cat.brands[brandIdx];
+    const status = getStatus(brand);
+    currentBrandHandle = brand.handle;
+
+    setDropdownStatus(status);
+    statusDropdown.classList.remove("open");
+    statusDropdownBtn.setAttribute("aria-expanded", "false");
+
+    modalEls.category.textContent = cat.category;
+    modalEls.name.textContent = brand.name;
+    modalEls.handle.textContent = "@" + brand.handle;
+    // static brand note hidden — notes now live in the editable textarea below
+    modalEls.note.style.display = "none";
+    if (brand.priority) {
+      modalEls.priority.style.display = "";
+      modalEls.priority.className = "modal-priority " + brand.priority;
+      modalEls.priority.textContent = "— " + (brand.priority === "dream" ? "Dream Brand" : brand.priority === "high" ? "High Interest" : "Open To");
+    } else {
+      modalEls.priority.style.display = "none";
+    }
+    modalEls.instagram.href = "https://instagram.com/" + brand.handle;
+
+    // load notes for this brand (saved agent note, or original brand note as starter)
+    const existingNote = savedNotes[brand.handle];
+    modalEls.notesTextarea.value = existingNote !== undefined ? existingNote : (brand.note || "");
+    modalEls.notesSaved.classList.remove("visible");
+
+    modalBackdrop.classList.add("open");
+    modalBackdrop.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+
+  // dropdown toggle
+  statusDropdownBtn.addEventListener("click", e => {
+    e.stopPropagation();
+    const isOpen = statusDropdown.classList.toggle("open");
+    statusDropdownBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  });
+
+  // dropdown item click
+  statusDropdownMenu.addEventListener("click", e => {
+    const item = e.target.closest(".status-dropdown-item");
+    if (!item || !currentBrandHandle) return;
+    const newStatus = item.dataset.value;
+    setStatus(currentBrandHandle, newStatus);
+    setDropdownStatus(newStatus);
+    statusDropdown.classList.remove("open");
+    statusDropdownBtn.setAttribute("aria-expanded", "false");
+    render();
+    applyFilters();
+  });
+
+  // close dropdown on outside click
+  document.addEventListener("click", e => {
+    if (statusDropdown.classList.contains("open") && !statusDropdown.contains(e.target)) {
+      statusDropdown.classList.remove("open");
+      statusDropdownBtn.setAttribute("aria-expanded", "false");
+    }
+  });
+
+  function closeModal() {
+    modalBackdrop.classList.remove("open");
+    modalBackdrop.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  }
+
+  // delegate card clicks
+  content.addEventListener("click", e => {
+    const card = e.target.closest(".card");
+    if (!card) return;
+    e.preventDefault();
+    openModal(Number(card.dataset.cat), Number(card.dataset.idx));
+  });
+
+  // notes autosave (debounced)
+  let notesDebounce = null;
+  modalEls.notesTextarea.addEventListener("input", () => {
+    if (!currentBrandHandle) return;
+    clearTimeout(notesDebounce);
+    notesDebounce = setTimeout(() => {
+      setAgentNote(currentBrandHandle, modalEls.notesTextarea.value);
+      modalEls.notesSaved.textContent = "✓ Saved";
+      modalEls.notesSaved.classList.add("visible");
+      // re-render so the card on the page shows the updated note
+      render();
+      applyFilters();
+      // hide the "saved" indicator after a moment
+      setTimeout(() => modalEls.notesSaved.classList.remove("visible"), 2000);
+    }, 500);
+  });
+
+  // close handlers
+  document.getElementById("modal-close").addEventListener("click", closeModal);
+  document.getElementById("modal-close-2").addEventListener("click", closeModal);
+  modalBackdrop.addEventListener("click", e => {
+    if (e.target === modalBackdrop) closeModal();
+  });
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && modalBackdrop.classList.contains("open")) closeModal();
+  });
 
   document.getElementById("date").textContent = new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" });
   render();
